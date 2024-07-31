@@ -1,2 +1,14 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+	import CompressionComponent from './compressionComponent.svelte';
+	import SelectionComponent from './selectionComponent.svelte';
+
+	let selectedFile: File | null = null;
+</script>
+
+<main class="container mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-center">
+	{#if selectedFile}
+		<CompressionComponent {selectedFile} onFileDeleted={() => (selectedFile = null)} />
+	{:else}
+		<SelectionComponent onFileSelected={(file) => (selectedFile = file)} />
+	{/if}
+</main>
