@@ -18,7 +18,7 @@
 	accept="video/*"
 	containerClasses="custom-dropzone"
 >
-	<p class="text-center text-gray-50">Drag 'n' drop some files here, or click to select a file</p>
+	<p class="text-center text-gray-50">Drag and drop a file here, or click to select a one</p>
 	<p class="text-center text-sm text-gray-400">
 		Compression happens on your device so your files never leave your computer
 	</p>
@@ -27,6 +27,6 @@
 
 <style lang="postcss">
 	:global(.custom-dropzone) {
-		@apply flex flex-col items-center justify-center gap-4 rounded-xl border border-zinc-700 bg-zinc-900 px-8 py-16;
+		@apply flex flex-col items-center justify-center gap-4 rounded-xl border border-zinc-700 bg-zinc-900 p-6 sm:px-8 sm:py-16;
 	}
 </style>

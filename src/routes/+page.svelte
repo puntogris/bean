@@ -5,7 +5,9 @@
 	let selectedFile: File | null = null;
 </script>
 
-<main class="container mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-center">
+<main
+	class="container mx-auto flex h-screen max-w-4xl flex-col items-center justify-center p-4 sm:p-14"
+>
 	{#if selectedFile}
 		<CompressionComponent {selectedFile} onFileDeleted={() => (selectedFile = null)} />
 	{:else}
