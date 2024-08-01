@@ -9,7 +9,10 @@
 	class="container mx-auto flex h-screen max-w-4xl flex-col items-center justify-center p-4 sm:p-14"
 >
 	{#if selectedFile}
-		<CompressionComponent {selectedFile} onFileDeleted={() => (selectedFile = null)} />
+		<CompressionComponent
+			originalFile={selectedFile}
+			onExitCompression={() => (selectedFile = null)}
+		/>
 	{:else}
 		<SelectionComponent onFileSelected={(file) => (selectedFile = file)} />
 	{/if}
