@@ -29,7 +29,6 @@
   "type": "module",
   "dependencies": {
     "@ffmpeg/ffmpeg": "0.12.7",
-    "@ffmpeg/types": "^0.12.2",
     "svelte-file-dropzone": "^2.0.7"
   }
 }
