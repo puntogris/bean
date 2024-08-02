@@ -3,7 +3,7 @@
 	import PlayIcon from '$lib/icons/playIcon.svelte';
 	import PauseIcon from '$lib/icons/pauseIcon.svelte';
 	import { getFFmpegInstance, setupFFmpegListeners, terminateFFmpegInstance } from '$lib/ffmpeg';
-	import { getUint8ArrayFromFile } from '$lib/utils';
+	import { getUint8ArrayFromFile, bytesToMb } from '$lib/utils';
 	import { onDestroy, onMount } from 'svelte';
 
 	export let originalFile: File;
@@ -19,7 +19,7 @@
 	let playerSlider = 0;
 	let playerPaused = true;
 
-	$: originalFileSizeInMb = originalFile.size / 1024 / 1024;
+	$: originalFileSizeInMb = bytesToMb(originalFile.size);
 	$: compressionFileName = `kompress_${originalFile.name}.mp4`;
 	$: compressionReductionPercentage = 100 - (compressionSize * 100) / originalFile.size;
 
@@ -54,7 +54,7 @@
 			'-movflags',
 			'faststart',
 			'-crf',
-			'40',
+			'45',
 			'-preset',
 			'ultrafast',
 			'-progress',
@@ -109,16 +109,16 @@
 	}
 </script>
 
-<div class="container mx-auto flex h-screen max-w-4xl flex-col gap-6">
+<div class="container mx-auto flex h-screen max-w-4xl flex-col gap-4 p-4 sm:p-8">
 	{#if compressionState === 'in_progress'}
 		<div
-			class="flex h-full w-full animate-pulse flex-col items-center justify-center rounded-xl border border-zinc-500 bg-zinc-900"
+			class="flex h-full w-full animate-pulse flex-col items-center justify-center rounded-xl border border-zinc-700 bg-zinc-900"
 		>
 			<div class="text-zinc-300">Compressing video...</div>
 			<div class="text-xl font-bold text-white">{compressionProgress}%</div>
 		</div>
 	{:else}
-		<div class="h-full w-full overflow-hidden rounded-xl border border-zinc-500 p-2">
+		<div class="h-full w-full overflow-hidden rounded-xl border border-zinc-700 p-2">
 			<!-- svelte-ignore a11y-media-has-caption -->
 			<video
 				bind:paused={playerPaused}
@@ -133,22 +133,17 @@
 	{/if}
 
 	<div class="flex items-center justify-between gap-3">
-		{#if playerPaused}
-			<button
-				disabled={compressionState === 'in_progress'}
-				on:click={() => (playerPaused = false)}
-				class="rounded p-2 text-sm text-white hover:bg-zinc-800"
-			>
+		<button
+			disabled={compressionState === 'in_progress'}
+			on:click={() => (playerPaused = !playerPaused)}
+			class="rounded p-2 text-sm text-white hover:bg-zinc-800"
+		>
+			{#if playerPaused}
 				<PlayIcon class="h-5 w-5" />
-			</button>
-		{:else}
-			<button
-				on:click={() => (playerPaused = true)}
-				class="rounded p-2 text-sm text-white hover:bg-zinc-800"
-			>
+			{:else}
 				<PauseIcon class="h-5 w-5" />
-			</button>
-		{/if}
+			{/if}
+		</button>
 		<input
 			on:input={onSliderInput}
 			type="range"
@@ -161,10 +156,10 @@
 	</div>
 
 	<div class="grid grid-cols-2 gap-3 sm:gap-6">
-		<div class="flexflex-col gap-2 rounded-md bg-zinc-900 p-4 sm:p-6">
+		<div class="flex flex-col gap-2 rounded-md bg-zinc-900 p-4 sm:p-6">
 			<div class="text-sm text-gray-300">ORIGINAL</div>
 			<h1 class="text-3xl font-semibold text-white sm:text-4xl">
-				{originalFileSizeInMb.toFixed(1)} MB
+				{originalFileSizeInMb} MB
 			</h1>
 			<button
 				on:click={exitCompression}
@@ -177,7 +172,7 @@
 			<div class="text-sm text-gray-300">COMPRESSED</div>
 			<div class="flex flex-col gap-2 sm:inline-flex sm:flex-row sm:items-center">
 				<h1 class="text-3xl font-semibold text-white sm:text-4xl">
-					{(compressionSize / 1024 / 1024).toFixed(1)} MB
+					{bytesToMb(compressionSize)} MB
 				</h1>
 				<div class="rounded bg-lime-300 px-1.5 py-0.5 text-xs text-black max-sm:text-center">
 					{compressionReductionPercentage.toFixed(0)}% smaller

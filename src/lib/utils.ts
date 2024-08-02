@@ -1,5 +1,5 @@
 async function getUint8ArrayFromFile(file: File): Promise<Uint8Array> {
-	return new Promise((resolve) => {
+	return new Promise((resolve, reject) => {
 		const fileReader = new FileReader();
 
 		fileReader.onload = () => {
@@ -10,11 +10,15 @@ async function getUint8ArrayFromFile(file: File): Promise<Uint8Array> {
 		};
 
 		fileReader.onerror = () => {
-			console.log('Error reading file');
+			reject(new Error('Error reading file'));
 		};
 
 		fileReader.readAsArrayBuffer(file);
 	});
 }
 
-export { getUint8ArrayFromFile };
+function bytesToMb(bytes: number): string {
+	return (bytes / 1024 / 1024).toFixed(1);
+}
+
+export { getUint8ArrayFromFile, bytesToMb };
