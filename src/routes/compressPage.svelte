@@ -1,17 +1,17 @@
 <script lang="ts">
+	import { onDestroy, onMount } from 'svelte';
 	import TrashIcon from '$lib/icons/trashIcon.svelte';
 	import PlayIcon from '$lib/icons/playIcon.svelte';
 	import PauseIcon from '$lib/icons/pauseIcon.svelte';
 	import { getFFmpegInstance, setupFFmpegListeners, terminateFFmpegInstance } from '$lib/ffmpeg';
 	import { getUint8ArrayFromFile, bytesToMb } from '$lib/utils';
-	import { onDestroy, onMount } from 'svelte';
 
 	export let originalFile: File;
 	export let onExitCompression: () => void = () => {};
 
 	let compressionProgress = 0;
 	let compressionSize = 0;
-	let compressionState: 'in_progress' | 'done' = 'done';
+	let compressionState: 'idle' | 'in_progress' | 'done' = 'idle';
 	let compressionUrl = '';
 
 	let playerTime = 0;
@@ -22,14 +22,15 @@
 	$: originalFileSizeInMb = bytesToMb(originalFile.size);
 	$: compressionFileName = `kompress_${originalFile.name}.mp4`;
 	$: compressionReductionPercentage = 100 - (compressionSize * 100) / originalFile.size;
+	$: isCompressionInProgress = compressionState === 'in_progress';
+	$: isCompressionDone = compressionState === 'done';
 
 	onMount(() => {
 		startFileCompression(originalFile, compressionFileName);
-
-		return () => terminateFFmpegInstance();
+		return terminateFFmpegInstance;
 	});
 
-	onDestroy(() => terminateFFmpegInstance());
+	onDestroy(terminateFFmpegInstance);
 
 	async function startFileCompression(inputFile: File, outputFileName: string) {
 		compressionState = 'in_progress';
@@ -54,7 +55,7 @@
 			'-movflags',
 			'faststart',
 			'-crf',
-			'45',
+			'38',
 			'-preset',
 			'ultrafast',
 			'-progress',
@@ -68,9 +69,7 @@
 		const outputFile = await ffmpeg.readFile(outputFileName);
 		const outputFileAsUint8Array = outputFile as Uint8Array;
 		const outputBlob = new Blob([outputFileAsUint8Array.buffer], { type: 'video/mp4' });
-		const outputUrl = URL.createObjectURL(outputBlob);
-
-		compressionUrl = outputUrl;
+		compressionUrl = URL.createObjectURL(outputBlob);
 
 		playerSlider = 0;
 		compressionSize = outputBlob.size;
@@ -82,8 +81,8 @@
 		onExitCompression();
 	}
 
-	function dowloadVideo() {
-		if (compressionState === 'done') {
+	function downloadVideo() {
+		if (isCompressionDone) {
 			const link = document.createElement('a');
 			link.href = compressionUrl;
 			link.download = compressionFileName;
@@ -91,16 +90,16 @@
 		}
 	}
 
-	function onSliderInput(event: Event & { currentTarget: EventTarget & HTMLInputElement }) {
-		if (compressionState === 'in_progress') {
+	function onSliderInput(event: Event) {
+		if (isCompressionInProgress) {
 			return;
 		}
-		const progress = Number(event.currentTarget.value);
+		const progress = Number((event.target as HTMLInputElement).value);
 		playerTime = (progress * playerDuration) / 100;
 	}
 
 	$: {
-		if (compressionState === 'in_progress') {
+		if (isCompressionInProgress) {
 			playerSlider = compressionProgress;
 		}
 		if (!playerPaused) {
@@ -110,7 +109,7 @@
 </script>
 
 <div class="container mx-auto flex h-screen max-w-4xl flex-col gap-4 p-4 sm:p-8">
-	{#if compressionState === 'in_progress'}
+	{#if isCompressionInProgress}
 		<div
 			class="flex h-full w-full animate-pulse flex-col items-center justify-center rounded-xl border border-zinc-700 bg-zinc-900"
 		>
@@ -134,7 +133,7 @@
 
 	<div class="flex items-center justify-between gap-3">
 		<button
-			disabled={compressionState === 'in_progress'}
+			disabled={isCompressionInProgress}
 			on:click={() => (playerPaused = !playerPaused)}
 			class="rounded p-2 text-sm text-white hover:bg-zinc-800"
 		>
@@ -150,7 +149,7 @@
 			min="0"
 			max="100"
 			value={playerSlider}
-			disabled={compressionState === 'in_progress'}
+			disabled={isCompressionInProgress}
 			class="h-full w-full"
 		/>
 	</div>
@@ -179,7 +178,7 @@
 				</div>
 			</div>
 			<button
-				on:click={dowloadVideo}
+				on:click={downloadVideo}
 				class="mt-3 w-full rounded bg-white p-2 text-sm text-black hover:bg-zinc-200"
 				>Download</button
 			>
