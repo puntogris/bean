@@ -55,7 +55,7 @@
 			'-movflags',
 			'faststart',
 			'-crf',
-			'38',
+			'28',
 			'-preset',
 			'ultrafast',
 			'-progress',
