@@ -12,7 +12,7 @@
 	}
 </script>
 
-<div class="flex h-screen flex-col">
+<div class="flex h-full flex-col">
 	<div class="container mx-auto flex h-full max-w-4xl items-center justify-center p-4 sm:p-14">
 		<Dropzone
 			on:drop={handleFilesSelect}

@@ -108,7 +108,7 @@
 	}
 </script>
 
-<div class="container mx-auto flex h-screen max-w-4xl flex-col gap-4 p-4 sm:p-8">
+<div class="container mx-auto flex h-full max-w-4xl flex-col gap-4 p-4 sm:p-8">
 	{#if isCompressionInProgress}
 		<div
 			class="flex h-full w-full animate-pulse flex-col items-center justify-center rounded-xl border border-zinc-700 bg-zinc-900"
@@ -157,20 +157,20 @@
 	<div class="grid grid-cols-2 gap-3 sm:gap-6">
 		<div class="flex flex-col gap-2 rounded-md bg-zinc-900 p-4 sm:p-6">
 			<div class="text-sm text-gray-300">ORIGINAL</div>
-			<h1 class="text-3xl font-semibold text-white sm:text-4xl">
+			<h1 class="line-clamp-1 text-2xl font-semibold text-white sm:text-4xl">
 				{originalFileSizeInMb} MB
 			</h1>
 			<button
 				on:click={exitCompression}
-				class="mt-3 flex items-center justify-center gap-2 rounded border border-zinc-500 p-2 text-sm text-white hover:bg-zinc-800"
+				class="mt-auto flex items-center justify-center gap-2 rounded border border-zinc-500 p-2 text-sm text-white hover:bg-zinc-800"
 			>
-				<TrashIcon class="h-6 w-6 text-zinc-300" />
+				<TrashIcon class="h-5 w-5 text-zinc-300" />
 			</button>
 		</div>
 		<div class="flex flex-col items-start gap-2 rounded-md bg-zinc-900 p-4 sm:p-6">
 			<div class="text-sm text-gray-300">COMPRESSED</div>
 			<div class="flex flex-col gap-2 sm:inline-flex sm:flex-row sm:items-center">
-				<h1 class="text-3xl font-semibold text-white sm:text-4xl">
+				<h1 class="line-clamp-1 text-2xl font-semibold text-white sm:text-4xl">
 					{bytesToMb(compressionSize)} MB
 				</h1>
 				<div class="rounded bg-lime-300 px-1.5 py-0.5 text-xs text-black max-sm:text-center">
