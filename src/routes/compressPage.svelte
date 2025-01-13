@@ -20,7 +20,7 @@
 	let playerPaused = true;
 
 	$: originalFileSizeInMb = bytesToMb(originalFile.size);
-	$: compressionFileName = `kompress_${originalFile.name}.mp4`;
+	$: compressionFileName = `bean_${originalFile.name}.mp4`;
 	$: compressionReductionPercentage = 100 - (compressionSize * 100) / originalFile.size;
 	$: isCompressionInProgress = compressionState === 'in_progress';
 	$: isCompressionDone = compressionState === 'done';
@@ -180,8 +180,9 @@
 			<button
 				on:click={downloadVideo}
 				class="mt-3 w-full rounded bg-white p-2 text-sm text-black hover:bg-zinc-200"
-				>Download</button
 			>
+				Download
+			</button>
 		</div>
 	</div>
 </div>
